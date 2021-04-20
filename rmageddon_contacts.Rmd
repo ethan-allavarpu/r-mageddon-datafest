@@ -8,11 +8,16 @@ date: "April 23rd - 25th, 2021"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Team Name
-
-R-Mageddon
-
-### Team Members
-
-  - Ethan Allavarpu: ethanallavarpu@g.ucla.edu
-  - Dara Tan: tanxuendara@ucla.edu
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Team Name} & \multicolumn{2}{|c|}{R-Mageddon} \\
+\hline
+\textbf{Team Member} & Ethan Allavarpu & Dara Tan\\
+\hline
+\textbf{Email} & ethanallavarpu@g.ucla.edu & tanxuendara@ucla.edu \\
+\hline
+ & Primary & \\
+\hline
+\end{tabular}
+\end{center}
