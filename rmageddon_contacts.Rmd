@@ -1,0 +1,18 @@
+---
+title: "R-Mageddon: DataFest 2021"
+output: pdf_document
+date: "April 23rd - 25th, 2021"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Team Name
+
+R-Mageddon
+
+### Team Members
+
+  - Ethan Allavarpu: ethanallavarpu@g.ucla.edu
+  - Dara Tan: tanxuendara@ucla.edu
