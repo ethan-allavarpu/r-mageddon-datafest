@@ -224,3 +224,46 @@ rownames(nmu_dast) <- nmus
     # 12 (COD) is lowest in all but DAST_1 and DAST_3
     # 3 (METH) is highest most frequently -> five out of ten questions
     # suggests that DAST is better at identifying NMU of some drugs than others
+
+# NMU VERSUS USE + DEMOGRAPHICS ----
+dem_use_nmu_summary <- function(dem_column_name) {
+  us18 %>%
+    select(dem_column = dem_column_name, nmus,
+           str_replace(nmus, "_NMU", "_USE")) %>%
+    mutate_all(~replace(., is.na(.), 0)) %>%
+    group_by(dem_column) %>%
+    summarize(fent = sum(FENT_NMU) / sum(FENT_USE),
+              bup = sum(BUP_NMU) / sum(BUP_USE),
+              meth = sum(METH_NMU) / sum(METH_USE),
+              morph = sum(MORPH_NMU) / sum(MORPH_USE),
+              oxy = sum(OXY_NMU) / sum(OXY_USE),
+              oxym = sum(OXYM_NMU) / sum(OXYM_USE),
+              tram = sum(TRAM_NMU) / sum(TRAM_USE),
+              tap = sum(TAP_NMU) / sum(TAP_USE),
+              hyd = sum(HYD_NMU) / sum(HYD_USE),
+              hydm = sum(HYDM_NMU) / sum(HYDM_USE),
+              suf = sum(SUF_NMU) / sum(SUF_USE),
+              cod = sum(COD_NMU) / sum(COD_USE),
+              dihy = sum(DIHY_NMU) / sum(DIHY_USE),
+              benz = sum(BENZ_NMU) / sum(BENZ_USE),
+              stim = sum(STIM_NMU) / sum(STIM_USE),
+              thc = sum(THC_NMU) / sum(THC_USE),
+              ktm = sum(KTM_NMU) / sum(KTM_USE))
+}
+dem_use_nmu <- map(dems, dem_use_nmu_summary)
+names(dem_use_nmu) <- dems
+  # eye-balling observations:
+    # GENDER: 1 (male) higher than 2 (female) except STIM and THC
+    # AGE10: order varies; mostly increasing trend with age
+    # STDNT: 1 (yes) larger than (no) for all drugs
+    # VET: 1 (yes) larger than 0 (no) for about half of the drugs;
+      # 0 is larger for MORPH, OXY, HYD, COD, BENZ, STIM, THC, KTM
+    # HEALTH: 1 (yes) higher than 0 (no) except STIM and THC
+    # STATE: order varies but VT is largest for 7 drugs
+    # HISPANIC: 1 (yes) largest for all drugs except THC
+    # RACE: order varies; 5 smallest for 9 drugs
+    # INCOME: order varies; 11 smallest for 11 drugs; 9 largest for 9 drugs
+    # MARITAL: order varies by drug; 2 (widowed) is smallest most often
+    # EDU: order varies by drug; 8 (doctorate) largest for 12 drugs
+    # PREG: 1 (yes) is larger than 0 (no) for all drugs
+      # note this is a flip of purely demographic against NMU
