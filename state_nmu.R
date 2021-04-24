@@ -24,5 +24,6 @@ states <- us18 %>%
             tram = weighted.mean(TRAM_NMU, WT), tap = weighted.mean(TAP_NMU, WT), hyd = weighted.mean(HYD_NMU, WT),
             hydm = weighted.mean(HYDM_NMU, WT), suf = weighted.mean(SUF_NMU, WT), cod = weighted.mean(COD_NMU, WT),
             dihy = weighted.mean(DIHY_NMU, WT), benz = weighted.mean(BENZ_NMU, WT), stim = weighted.mean(STIM_NMU, WT),
-            thc = weighted.mean(THC_NMU, WT), ktm = weighted.mean(KTM_NMU, WT))
+            thc = weighted.mean(THC_NMU, WT), ktm = weighted.mean(KTM_NMU, WT),
+            total = sum(fent, bup, meth, morph, oxy, oxym, tram, tap, hyd, hydm, suf, cod, dihy, benz, stim, thc, ktm))
 names(states)[1] <- "state"

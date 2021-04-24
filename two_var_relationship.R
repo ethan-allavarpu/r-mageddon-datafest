@@ -24,7 +24,7 @@ nmu_aggregate <- us18[, nmus] %>%
 
 two_var_relationship <- function(x, y) {
   race_age <- list()
-  length(race_age) <- 17
+  length(race_age) <- 18
   names(race_age) <- nmus
   us18$var1 <- us18[[x]]
   us18$var2 <- us18[[y]]
@@ -37,15 +37,16 @@ two_var_relationship <- function(x, y) {
               tram = weighted.mean(TRAM_NMU, WT), tap = weighted.mean(TAP_NMU, WT), hyd = weighted.mean(HYD_NMU, WT),
               hydm = weighted.mean(HYDM_NMU, WT), suf = weighted.mean(SUF_NMU, WT), cod = weighted.mean(COD_NMU, WT),
               dihy = weighted.mean(DIHY_NMU, WT), benz = weighted.mean(BENZ_NMU, WT), stim = weighted.mean(STIM_NMU, WT),
-              thc = weighted.mean(THC_NMU, WT), ktm = weighted.mean(KTM_NMU, WT))
-  for (i in seq_len(17)) {
+              thc = weighted.mean(THC_NMU, WT), ktm = weighted.mean(KTM_NMU, WT),
+              total = sum(fent, bup, meth, morph, oxy, oxym, tram, tap, hyd, hydm, suf, cod, dihy, benz, stim, thc, ktm, na.rm = TRUE))
+  for (i in seq_len(ncol(ra) - 2)) {
     ra[is.na(ra)] <- 0
     ra_new <- as.data.frame(ra[, c(1:2, i + 2)])
     colnames(ra_new) <- c(x, y, "NMU")
     race_age[[i]] <- ra_new
   }
   nmu <- numeric(0)
-  for (i in seq_along(race_age)) {
+  for (i in seq_len(length(race_age) - 1)) {
     nmu <- c(nmu, race_age[[i]][["NMU"]])
   }
   par(mfrow = c(1, 2))
@@ -54,10 +55,10 @@ two_var_relationship <- function(x, y) {
       geom_tile()
     cor_heatmap <- cor_heatmap +
       scale_fill_gradient2(low = "white", high = "darkred", 
-                           limits = range(nmu, na.rm = TRUE)) +
+                           limits = if (i < 18) {range(nmu, na.rm = TRUE)} else{NULL}) +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 12, hjust = 1)) +
-      ggtitle(names(race_age)[i]) + xlab(x) + ylab(y)
+      ggtitle(c(names(race_age), "ALL")[i]) + xlab(x) + ylab(y)
     print(cor_heatmap)
   }
 }

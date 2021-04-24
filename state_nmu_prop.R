@@ -23,5 +23,6 @@ state_nmu <- us18 %>%
             tram = weighted.mean(TRAM_NMU, WT, na.rm = TRUE), tap = weighted.mean(TAP_NMU, WT, na.rm = TRUE), hyd = weighted.mean(HYD_NMU, WT, na.rm = TRUE),
             hydm = weighted.mean(HYDM_NMU, WT, na.rm = TRUE), suf = weighted.mean(SUF_NMU, WT, na.rm = TRUE), cod = weighted.mean(COD_NMU, WT, na.rm = TRUE),
             dihy = weighted.mean(DIHY_NMU, WT, na.rm = TRUE), benz = weighted.mean(BENZ_NMU, WT, na.rm = TRUE), stim = weighted.mean(STIM_NMU, WT, na.rm = TRUE),
-            thc = weighted.mean(THC_NMU, WT, na.rm = TRUE), ktm = weighted.mean(KTM_NMU, WT, na.rm = TRUE))
+            thc = weighted.mean(THC_NMU, WT, na.rm = TRUE), ktm = weighted.mean(KTM_NMU, WT, na.rm = TRUE),
+            total = sum(fent, bup, meth, morph, oxy, oxym, tram, tap, hyd, hydm, suf, cod, dihy, benz, stim, thc, ktm, na.rm = TRUE))
 names(state_nmu)[1] <- "state"

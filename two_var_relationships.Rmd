@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.width = 3, fig.height = 3)
+knitr::opts_chunk$set(echo = TRUE, fig.width = 3, fig.height = 3, message = FALSE)
 ```
 
 # Age and Race
@@ -45,3 +45,9 @@ two_var_relationship("ALC_USE", "CAN_REC_USE")
 ```{r}
 two_var_relationship("ALC_USE", "DEM_DOLLARS")
 ```
+
+# DOLLARS vs. COLLEGE
+```{r}
+two_var_relationship("DEM_EDU", "DEM_DOLLARS")
+```
+
