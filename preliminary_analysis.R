@@ -43,23 +43,28 @@ rm(list = c("i", "order_vector", "use_vector"))
 
 # DEMOGRAPHICS AND NMU ----
 nmus <- str_subset(names(us18), "NMU\\b")
-nmu_sums <- us18[, nmus] %>%
+nmu_props <- us18[, nmus] %>%
   mutate_all(~replace(., is.na(.), 0)) %>% # missing = no lifetime use
-  colSums()
+  colMeans()
 dem_nmu_summary <- function(dem_column_name) {
   dem_variable <- us18[[dem_column_name]]
   if (dem_column_name == "DEM_PREG") {
     dem_variable[is.na(dem_variable)] <- 0
   }
-  dem_sums <- summary(as.factor(dem_variable))
-  dem_nmu_df <-
-    data.frame(matrix(nrow = length(dem_sums), ncol = length(nmu_sums)))
-  for (i in seq_along(dem_sums)) {
-    for (j in seq_along(nmu_sums)) {
-      dem_nmu_df[i, j] <- nmu_sums[j] / dem_sums[i]
-    }
-  }
-  names(dem_nmu_df) <- nmus
+  dem_totals <- summary(as.factor(dem_variable))
+  dem_nmu_df <- us18 %>%
+    select(dem_column = dem_column_name, nmus) %>%
+    mutate_all(~replace(., is.na(.), 0)) %>%
+    group_by(dem_column) %>%
+    summarize(fent = sum(FENT_NMU), bup = sum(BUP_NMU), meth = sum(METH_NMU),
+              morph = sum(MORPH_NMU), oxy = sum(OXY_NMU), oxym = sum(OXYM_NMU),
+              tram = sum(TRAM_NMU), tap = sum(TAP_NMU), hyd = sum(HYD_NMU),
+              hydm = sum(HYDM_NMU), suf = sum(SUF_NMU), cod = sum(COD_NMU),
+              dihy = sum(DIHY_NMU), benz = sum(BENZ_NMU), stim = sum(STIM_NMU),
+              thc = sum(THC_NMU), ktm = sum(KTM_NMU)) %>%
+    select(-dem_column) %>%
+    apply(2, function(x) { x / dem_totals}) %>%
+    apply(1, function(y) {y / nmu_props}) %>% t()
   rownames(dem_nmu_df) <- levels(as.factor(dem_variable))
   dem_nmu_df
 }
@@ -70,19 +75,20 @@ dems <- c("DEM_GENDER", "DEM_AGE10", "DEM_STDNT", "DEM_VET", "DEM_HEALTH",
           "DEM_EDU", "DEM_PREG") # missing for DEM_PREG = males
 dem_nmu <- map(dems, dem_nmu_summary)
 names(dem_nmu) <- dems
+
   # eye-balling observations:
-  # GENDER: very similar between 1 (male) and 2 (female)
-  # AGE10: descending order for all drugs = 1 > 6 > 3 > 2 > 4 > 5
-  # STDNT: 1 (yes) is ~10 times larger than 0 (no) for all drugs
-  # VET: 1 (yes) is ~8-10 times larger than 0 (no) for all drugs except KTM
-  # HEALTH: 1 (yes) is ~20 times larger than 0 (no) for all drugs
-  # STATE: top three = 1 (AK) > 47 (VT) > 29 (ND);
-    # bottom three = 5 (CA) < 10 (FL) < 44 (TX) for all drugs
-  # HISPANIC: 0 << 1 << 9 (did not say); each << is ~ one order of magnitude
-  # RACE: 4 > 5 > 7 > 6 > 3 > 2 > 1 for all drugs
-  # INCOME: 10 < 1 < 3 < 2 < 5 < 4 < 7 < 6 < 11 < 9 < 8 for all drugs
-  # MARITAL: 1 < 4 < 3 < 2 for all drugs; 2 (widowed) is much higher than all
-    # others for some drugs e.g. OXY (>3 times higher than next highest)
-  # EDU: 6 < 3 < 2 < 5 < 7 < 4 < 8 < 1 for all drugs; 1 (below high school) and
-    # 8 (doctorate) are pretty comparable, 4 (trade school) is about half that
-  # PREG: 1 (yes) is two orders of magnitude larger than 0 (no) for all drugs
+  # GENDER: 1 (male) is ~3 times of 2 (female)
+  # AGE10: 6 (oldest category) < 5 < 4 < 1 (youngest) < 3 < 2 for all drugs
+  # STDNT: 1 (yes) is ~2-6 times larger than 0 (no) for all drugs
+  # VET: 1 (yes) tends to be larger than 0 (no), but generally comparable
+  # HEALTH: 1 (yes) larger than 0 (no) for all drugs, up to >7 times as large
+  # STATE: top and bottom states vary by drug
+  # HISPANIC: 1 (yes) largest for all drugs, up to >5 as large as next largest
+  # RACE: order varies by drug; generally 5 & 6 = smallest; 4 & 7 = largest
+  # INCOME: order varies by drug; 11 always smallest; 9 usually largest
+  # MARITAL: order varies by drug; 2 (widowed) always smallest;
+    # largest is usually 4 (never married) and occasionally 1 (married)
+  # EDU: order varies by drug; 8 (doctorate) is largest for all except THC
+  # PREG: 0 (no) is larger than 1 (yes) for all drugs, up to >8 as large
+
+
