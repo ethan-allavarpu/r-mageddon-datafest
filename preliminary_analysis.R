@@ -193,7 +193,98 @@ us18 %>%
             oxym = mean(OXYM_NMU), tram = mean(TRAM_NMU), tap = mean(TAP_NMU),
             hyd = mean(HYD_NMU), hydm = mean(HYDM_NMU), suf = mean(SUF_NMU),
             cod = mean(COD_NMU), dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU),
-            stim = mean(STIM_NMU), thc = mean(THC_NMU), ktm = mean(KTM_NMU)) %>% View()
+            stim = mean(STIM_NMU), thc = mean(THC_NMU), ktm = mean(KTM_NMU))
+
+# PAIN AND NMU ----
+  # section key takeaway: proportion of NMU use is generally highest among
+  # respondents who have suffered from, visited a healthcare provider for, or
+  # received opioid prescriptions for, chronic/acute pain
+    # could be due to addiction?
+
+  # Q61: suffers from chronic pain
+  # highest for each drug = either 2 (last week) or 3 (last 30 days)
+  # lowest shared by 1 (no) and 5 (in my lifetime)
+us18 %>%
+  select(PAIN_CHRONIC, nmus) %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  group_by(PAIN_CHRONIC) %>%
+  summarize(fent = mean(FENT_NMU), bup = mean(BUP_NMU), meth = mean(METH_NMU),
+            morph = mean(MORPH_NMU), oxy = mean(OXY_NMU),
+            oxym = mean(OXYM_NMU), tram = mean(TRAM_NMU), tap = mean(TAP_NMU),
+            hyd = mean(HYD_NMU), hydm = mean(HYDM_NMU), suf = mean(SUF_NMU),
+            cod = mean(COD_NMU), dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU),
+            stim = mean(STIM_NMU), thc = mean(THC_NMU), ktm = mean(KTM_NMU)) %>%
+  pivot_longer(cols = str_to_lower(str_replace(nmus, "_NMU", "")),
+               names_to = "drug", values_to = "prop") %>%
+  ggplot() + geom_line(aes(x = PAIN_CHRONIC, y = prop, color = drug))
+
+  # Q62: visited a healthcare provider for chronic pain
+  # clearly peaks at 2 (last week) for all drugs
+us18 %>%
+  filter(!is.na(PAIN_CHRONIC_DOC)) %>%
+  select(PAIN_CHRONIC_DOC, nmus) %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  group_by(PAIN_CHRONIC_DOC) %>%
+  summarize(fent = mean(FENT_NMU), bup = mean(BUP_NMU), meth = mean(METH_NMU),
+            morph = mean(MORPH_NMU), oxy = mean(OXY_NMU),
+            oxym = mean(OXYM_NMU), tram = mean(TRAM_NMU), tap = mean(TAP_NMU),
+            hyd = mean(HYD_NMU), hydm = mean(HYDM_NMU), suf = mean(SUF_NMU),
+            cod = mean(COD_NMU), dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU),
+            stim = mean(STIM_NMU), thc = mean(THC_NMU), ktm = mean(KTM_NMU)) %>%
+  pivot_longer(cols = str_to_lower(str_replace(nmus, "_NMU", "")),
+               names_to = "drug", values_to = "prop") %>%
+  ggplot() + geom_line(aes(x = PAIN_CHRONIC_DOC, y = prop, color = drug))
+
+  # Q63: received prescription opioids for chronic pain
+  # clearly peaks at 2 (last week) for all drugs
+us18 %>%
+  filter(!is.na(PAIN_CHRONIC_RX)) %>%
+  select(PAIN_CHRONIC_RX, nmus) %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  group_by(PAIN_CHRONIC_RX) %>%
+  summarize(fent = mean(FENT_NMU), bup = mean(BUP_NMU), meth = mean(METH_NMU),
+            morph = mean(MORPH_NMU), oxy = mean(OXY_NMU),
+            oxym = mean(OXYM_NMU), tram = mean(TRAM_NMU), tap = mean(TAP_NMU),
+            hyd = mean(HYD_NMU), hydm = mean(HYDM_NMU), suf = mean(SUF_NMU),
+            cod = mean(COD_NMU), dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU),
+            stim = mean(STIM_NMU), thc = mean(THC_NMU), ktm = mean(KTM_NMU)) %>%
+  pivot_longer(cols = str_to_lower(str_replace(nmus, "_NMU", "")),
+               names_to = "drug", values_to = "prop") %>%
+  ggplot() + geom_line(aes(x = PAIN_CHRONIC_RX, y = prop, color = drug))
+
+  # Q65: visited a healthcare provider for acute pain
+  # clearly peaks at 2 (last week) for all drugs
+us18 %>%
+  filter(!is.na(PAIN_ACUTE_DOC)) %>%
+  select(PAIN_ACUTE_DOC, nmus) %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  group_by(PAIN_ACUTE_DOC) %>%
+  summarize(fent = mean(FENT_NMU), bup = mean(BUP_NMU), meth = mean(METH_NMU),
+            morph = mean(MORPH_NMU), oxy = mean(OXY_NMU),
+            oxym = mean(OXYM_NMU), tram = mean(TRAM_NMU), tap = mean(TAP_NMU),
+            hyd = mean(HYD_NMU), hydm = mean(HYDM_NMU), suf = mean(SUF_NMU),
+            cod = mean(COD_NMU), dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU),
+            stim = mean(STIM_NMU), thc = mean(THC_NMU), ktm = mean(KTM_NMU)) %>%
+  pivot_longer(cols = str_to_lower(str_replace(nmus, "_NMU", "")),
+               names_to = "drug", values_to = "prop") %>%
+  ggplot() + geom_line(aes(x = PAIN_ACUTE_DOC, y = prop, color = drug))
+
+  # Q66: received prescription opioids for acute pain
+  # clearly peaks at 2 (last week) for all drugs
+us18 %>%
+  filter(!is.na(PAIN_ACUTE_RX)) %>%
+  select(PAIN_ACUTE_RX, nmus) %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  group_by(PAIN_ACUTE_RX) %>%
+  summarize(fent = mean(FENT_NMU), bup = mean(BUP_NMU), meth = mean(METH_NMU),
+            morph = mean(MORPH_NMU), oxy = mean(OXY_NMU),
+            oxym = mean(OXYM_NMU), tram = mean(TRAM_NMU), tap = mean(TAP_NMU),
+            hyd = mean(HYD_NMU), hydm = mean(HYDM_NMU), suf = mean(SUF_NMU),
+            cod = mean(COD_NMU), dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU),
+            stim = mean(STIM_NMU), thc = mean(THC_NMU), ktm = mean(KTM_NMU)) %>%
+  pivot_longer(cols = str_to_lower(str_replace(nmus, "_NMU", "")),
+               names_to = "drug", values_to = "prop") %>%
+  ggplot() + geom_line(aes(x = PAIN_ACUTE_RX, y = prop, color = drug))
 
 # RELATIONSHIP BETWEEN NMU AND DAST-10 ----
 dasts <- str_c("DAST_", 1:10)
