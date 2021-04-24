@@ -1,3 +1,4 @@
+
 library(tidyverse)
 us18 <- read.csv("US/us_18Q1.csv") %>%
   select(-DATE, -QTIME, -START_DATE, -STATUS)
@@ -46,6 +47,11 @@ nmus <- str_subset(names(us18), "NMU\\b")
 nmu_props <- us18[, nmus] %>%
   mutate_all(~replace(., is.na(.), 0)) %>% # missing = no lifetime use
   colMeans()
+
+# broad categories ----
+dems <- c("DEM_GENDER", "DEM_AGE10", "DEM_STDNT", "DEM_VET", "DEM_HEALTH",
+          "DEM_STATE", "DEM_HISPANIC", "DEM_RACE", "DEM_INCOME", "DEM_MARITAL",
+          "DEM_EDU", "DEM_PREG") # missing for DEM_PREG = males
 dem_nmu_summary <- function(dem_column_name) {
   dem_variable <- us18[[dem_column_name]]
   if (dem_column_name == "DEM_PREG") {
@@ -63,32 +69,103 @@ dem_nmu_summary <- function(dem_column_name) {
               dihy = sum(DIHY_NMU), benz = sum(BENZ_NMU), stim = sum(STIM_NMU),
               thc = sum(THC_NMU), ktm = sum(KTM_NMU)) %>%
     select(-dem_column) %>%
-    apply(2, function(x) { x / dem_totals}) %>%
+    apply(2, function(x) {x / dem_totals}) %>%
     apply(1, function(y) {y / nmu_props}) %>% t()
   rownames(dem_nmu_df) <- levels(as.factor(dem_variable))
   dem_nmu_df
 }
-
-# broad categories ----
-dems <- c("DEM_GENDER", "DEM_AGE10", "DEM_STDNT", "DEM_VET", "DEM_HEALTH",
-          "DEM_STATE", "DEM_HISPANIC", "DEM_RACE", "DEM_INCOME", "DEM_MARITAL",
-          "DEM_EDU", "DEM_PREG") # missing for DEM_PREG = males
 dem_nmu <- map(dems, dem_nmu_summary)
 names(dem_nmu) <- dems
-
   # eye-balling observations:
-  # GENDER: 1 (male) is ~3 times of 2 (female)
-  # AGE10: 6 (oldest category) < 5 < 4 < 1 (youngest) < 3 < 2 for all drugs
-  # STDNT: 1 (yes) is ~2-6 times larger than 0 (no) for all drugs
-  # VET: 1 (yes) tends to be larger than 0 (no), but generally comparable
-  # HEALTH: 1 (yes) larger than 0 (no) for all drugs, up to >7 times as large
-  # STATE: top and bottom states vary by drug
-  # HISPANIC: 1 (yes) largest for all drugs, up to >5 as large as next largest
-  # RACE: order varies by drug; generally 5 & 6 = smallest; 4 & 7 = largest
-  # INCOME: order varies by drug; 11 always smallest; 9 usually largest
-  # MARITAL: order varies by drug; 2 (widowed) always smallest;
-    # largest is usually 4 (never married) and occasionally 1 (married)
-  # EDU: order varies by drug; 8 (doctorate) is largest for all except THC
-  # PREG: 0 (no) is larger than 1 (yes) for all drugs, up to >8 as large
+    # GENDER: 1 (male) is ~3 times of 2 (female)
+    # AGE10: 6 (oldest category) < 5 < 4 < 1 (youngest) < 3 < 2 for all drugs
+    # STDNT: 1 (yes) is ~2-6 times larger than 0 (no) for all drugs
+    # VET: 1 (yes) tends to be larger than 0 (no), but generally comparable
+    # HEALTH: 1 (yes) larger than 0 (no) for all drugs, up to >7 times as large
+    # STATE: top and bottom states vary by drug
+    # HISPANIC: 1 (yes) largest for all drugs, up to >5 as large as next
+    # RACE: order varies by drug; generally 5 & 6 = smallest; 4 & 7 = largest
+    # INCOME: order varies by drug; 11 always smallest; 9 usually largest
+    # MARITAL: order varies by drug; 2 (widowed) always smallest;
+      # largest is usually 4 (never married) and occasionally 1 (married)
+    # EDU: order varies by drug; 8 (doctorate) is largest for all except THC
+    # PREG: 0 (no) is larger than 1 (yes) for all drugs, up to >8 as large
 
+# college students ----
+nmu_aggregate <- us18[, nmus] %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  rowSums()
+college_nmu <- as_tibble(us18) %>%
+  bind_cols(nmu = nmu_aggregate) %>%
+  filter(DEM_COLLEGE == 1)
 
+  # Q13: similar between 0 (public) and 1 (private) for both mean and variance
+college_nmu %>%
+  group_by(COLLEGE_TYPE) %>%
+  summarize(mean(nmu), sd(nmu))
+
+  # Q14: mean of 4 (online university) is only a bit smaller than 1 (two-year)
+    # or 2 (four-year) at ~0.7-0.9; 5 (trade school) is clearly largest at ~2.5
+    # 4 also has largest variance -> likely not all students engage in nmu,
+    # but those who do, consume multiple drugs
+college_nmu %>%
+  group_by(COLLEGE_LENGTH) %>%
+  summarize(mean(nmu), sd(nmu))
+
+  # Q15: 0 (<5000) and 4 (not sure) are noticeably smaller; 1-3 comparable
+    # for both mean and variance
+college_nmu %>%
+  group_by(COLLEGE_SIZE) %>%
+  summarize(mean(nmu), sd(nmu))
+
+  # Q16: 1 (yes) is substantially larger than 0 (no) for both mean and variance
+college_nmu %>%
+  group_by(COLLEGE_HOUSING) %>%
+  summarize(mean(nmu), sd(nmu))
+
+  # Q17: 1 (yes) is substantially larger than 0 (no) for both mean and variance
+    # mean and variance of 0 is similar to that for 0 of Q16 -> could be a
+    # baseline for college students without influence of large college
+    # institutions e.g. campus housing and fraternities/sororities?
+college_nmu %>%
+  group_by(COLLEGE_GREEK) %>%
+  summarize(mean(nmu), sd(nmu))
+
+# MENTAL ILLNESS AND NMU ----
+ments <- str_subset(names(us18), "MENT_")
+ments <- ments[1:(length(ments) - 2)] # drop other and none
+ment_nmu_summary <- function(ment_column_name) {
+  ment_totals <- summary(as.factor(us18[[ment_column_name]]))
+  ment_nmu_df <- us18 %>%
+    select(ment_column = ment_column_name, nmus) %>%
+    mutate_all(~replace(., is.na(.), 0)) %>%
+    group_by(ment_column) %>%
+    summarize(fent = sum(FENT_NMU), bup = sum(BUP_NMU), meth = sum(METH_NMU),
+              morph = sum(MORPH_NMU), oxy = sum(OXY_NMU), oxym = sum(OXYM_NMU),
+              tram = sum(TRAM_NMU), tap = sum(TAP_NMU), hyd = sum(HYD_NMU),
+              hydm = sum(HYDM_NMU), suf = sum(SUF_NMU), cod = sum(COD_NMU),
+              dihy = sum(DIHY_NMU), benz = sum(BENZ_NMU), stim = sum(STIM_NMU),
+              thc = sum(THC_NMU), ktm = sum(KTM_NMU)) %>%
+    select(-ment_column) %>%
+    apply(2, function(x) {x / ment_totals}) %>%
+    apply(1, function(y) {y / nmu_props}) %>% t()
+  rownames(ment_nmu_df) <- names(ment_totals)
+  ment_nmu_df
+}
+ment_nmu <- map(ments, ment_nmu_summary)
+names(ment_nmu) <- ments
+  # eye-balling observations:
+    # ANX: 1 > 0 for all drugs; by up to >3 times
+    # ADHD: 1 > 0 for all drugs; by ~2-5 times each
+    # AUT: 1 > 0 for all drugs; by >2 times each and up to >16 times
+    # BIP: 1 > 0 for all drugs; by ~2-5 times each
+    # BPD: 1 > 0 for all drugs; by >3 times each and up to >9 times
+    # DEP: 1 > 0 for all drugs except TAP; by ~2 times mostly
+    # EAT: 1 > 0 for all drugs; by >2 times each and up to >6 times
+    # OCD: 1 > 0 for all drugs; by ~2-3+ times each
+    # PANIC: 1 > 0 for all drugs; by up to ~3 times
+    # PPD: 1 > 0 for all drugs; by ~2-4+ times each
+    # PTSD: 1 > 0 for all drugs except SUF and TAP; by ~2+ times mostly
+    # SCH: 1 > 0 for all drugs; by up to >3 times
+
+# RELATIONSHIP BETWEEN NMU AND DAST-10 (VARY BY DRUG TYPE?) -- NEXT
