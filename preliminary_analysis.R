@@ -32,14 +32,14 @@ order_section %>%
   apply(MARGIN = 1, FUN = mean)
 
 # by respondent ----
-order_respondent <- integer(13)
-for (i in seq_len(nrow(us18))) {
-  order_vector <- as.integer(unname(us18[i, ] %>%
-                                      select(str_c("ORDER_", sections))))
-  use_vector <- as.integer(unname(us18[i, ] %>%
-                                    select(str_c(sections, "_USE"))))
-  order_respondent <- order_respondent + use_vector[order(order_vector)]
-}
+# order_respondent <- integer(13)
+# for (i in seq_len(nrow(us18))) {
+#   order_vector <- as.integer(unname(us18[i, ] %>%
+#                                       select(str_c("ORDER_", sections))))
+#   use_vector <- as.integer(unname(us18[i, ] %>%
+#                                     select(str_c(sections, "_USE"))))
+#   order_respondent <- order_respondent + use_vector[order(order_vector)]
+# }
 rm(list = c("i", "order_vector", "use_vector"))
 
 # DEMOGRAPHICS AND NMU ----
@@ -171,7 +171,7 @@ names(ment_nmu) <- ments
 # ALCOHOL/TOBACCO USE ----
   # clear jump from 1 (0 drinks/week) and 2 (1-7) to 3 (8-14) and 4 (15-21)
   # 5 (22 and above) above 3 and 4 for some drugs but below for others
-us18 %>%
+alc <- us18 %>%
   select(ALC_USE, nmus) %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
   group_by(ALC_USE) %>%
@@ -181,6 +181,13 @@ us18 %>%
             hyd = mean(HYD_NMU), hydm = mean(HYDM_NMU), suf = mean(SUF_NMU),
             cod = mean(COD_NMU), dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU),
             stim = mean(STIM_NMU), thc = mean(THC_NMU), ktm = mean(KTM_NMU))
+
+
+plot(alc$ALC_USE, alc[[2]], type = "l",
+     xlab = "ALC_USE", ylab = "NMU", ylim = range(alc[,-1]))
+for (i in seq_len(ncol(alc) - 2) + 2) {
+  lines(alc$ALC_USE, alc[[i]], col = i)
+}
 
   # 1 (currently use) is higher than 2 (never) and 3 (previously used) for all
   # drugs; 3 is up to ~2 times of 2 for some drugs but comparable on others
