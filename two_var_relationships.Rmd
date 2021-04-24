@@ -1,0 +1,47 @@
+---
+title: "Two-Variable Correlation"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 1
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 3, fig.height = 3)
+```
+
+# Age and Race
+
+```{r}
+source("two_var_relationship.R")
+two_var_relationship("DEM_AGE10", "DEM_RACE")
+```
+
+\pagebreak
+
+# College and Race
+```{r}
+two_var_relationship("DEM_COLLEGE", "DEM_RACE")
+```
+
+\pagebreak
+
+# Greek Life vs. College
+```{r}
+two_var_relationship("DEM_COLLEGE", "COLLEGE_GREEK")
+```
+
+\pagebreak
+
+# ALC vs. Cannibis
+```{r}
+two_var_relationship("ALC_USE", "CAN_REC_USE")
+```
+
+\pagebreak
+
+# ALC vs. Dollars
+```{r}
+two_var_relationship("ALC_USE", "DEM_DOLLARS")
+```

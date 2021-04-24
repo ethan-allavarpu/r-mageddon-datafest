@@ -10,6 +10,12 @@ us18 <- read.csv("US/us_18Q1.csv") %>%
 us18 <- mutate(us18, )
 
 
+
+nmus <- str_subset(names(us18), "NMU\\b")
+nmu_vals <- us18[, nmus] %>%
+  mutate_all(~replace(., is.na(.), 0))
+tapply(as.numeric(as.matrix(nmu_vals)), rep(nmus, each = nrow(nmu_vals)), weighted.mean, w = us18$WT)
+
 # By location
 nmus <- str_subset(names(us18), "NMU\\b")
 nmu_aggregate <- us18[, nmus] %>%
@@ -26,18 +32,33 @@ two_var_relationship <- function(x, y) {
     mutate(NMU = nmu_aggregate) %>%
     mutate_all(~replace(., is.na(.), 0)) %>%
     group_by(var1, var2) %>%
-    summarize(fent = mean(FENT_NMU), bup = mean(BUP_NMU), meth = mean(METH_NMU),
-              morph = mean(MORPH_NMU), oxy = mean(OXY_NMU), oxym = mean(OXYM_NMU),
-              tram = mean(TRAM_NMU), tap = mean(TAP_NMU), hyd = mean(HYD_NMU),
-              hydm = mean(HYDM_NMU), suf = mean(SUF_NMU), cod = mean(COD_NMU),
-              dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU), stim = mean(STIM_NMU),
-              thc = mean(THC_NMU), ktm = mean(KTM_NMU))
+    summarize(fent = weighted.mean(FENT_NMU, WT), bup = weighted.mean(BUP_NMU, WT), meth = weighted.mean(METH_NMU, WT),
+              morph = weighted.mean(MORPH_NMU, WT), oxy = weighted.mean(OXY_NMU, WT), oxym = weighted.mean(OXYM_NMU, WT),
+              tram = weighted.mean(TRAM_NMU, WT), tap = weighted.mean(TAP_NMU, WT), hyd = weighted.mean(HYD_NMU, WT),
+              hydm = weighted.mean(HYDM_NMU, WT), suf = weighted.mean(SUF_NMU, WT), cod = weighted.mean(COD_NMU, WT),
+              dihy = weighted.mean(DIHY_NMU, WT), benz = weighted.mean(BENZ_NMU, WT), stim = weighted.mean(STIM_NMU, WT),
+              thc = weighted.mean(THC_NMU, WT), ktm = weighted.mean(KTM_NMU, WT))
   for (i in seq_len(17)) {
     ra[is.na(ra)] <- 0
     ra_new <- as.data.frame(ra[, c(1:2, i + 2)])
     colnames(ra_new) <- c(x, y, "NMU")
     race_age[[i]] <- ra_new
   }
-  race_age
+  nmu <- numeric(0)
+  for (i in seq_along(race_age)) {
+    nmu <- c(nmu, race_age[[i]][["NMU"]])
+  }
+  par(mfrow = c(1, 2))
+  for (i in seq_along(race_age)) {
+    cor_heatmap <- ggplot(data = race_age[[i]], aes(x = race_age[[i]][, 1], y = race_age[[i]][, 2], fill = NMU)) +
+      geom_tile()
+    cor_heatmap <- cor_heatmap +
+      scale_fill_gradient2(low = "white", high = "darkred", 
+                           limits = range(nmu, na.rm = TRUE)) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 12, hjust = 1)) +
+      ggtitle(names(race_age)[i]) + xlab(x) + ylab(y)
+    print(cor_heatmap)
+  }
 }
 

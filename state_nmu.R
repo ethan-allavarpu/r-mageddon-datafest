@@ -19,10 +19,10 @@ states <- us18 %>%
   mutate(NMU = nmu_aggregate) %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
   group_by(DEM_STATE) %>%
-  summarize(fent = mean(FENT_NMU), bup = mean(BUP_NMU), meth = mean(METH_NMU),
-            morph = mean(MORPH_NMU), oxy = mean(OXY_NMU), oxym = mean(OXYM_NMU),
-            tram = mean(TRAM_NMU), tap = mean(TAP_NMU), hyd = mean(HYD_NMU),
-            hydm = mean(HYDM_NMU), suf = mean(SUF_NMU), cod = mean(COD_NMU),
-            dihy = mean(DIHY_NMU), benz = mean(BENZ_NMU), stim = mean(STIM_NMU),
-            thc = mean(THC_NMU), ktm = mean(KTM_NMU))
+  summarize(fent = weighted.mean(FENT_NMU, WT), bup = weighted.mean(BUP_NMU, WT), meth = weighted.mean(METH_NMU, WT),
+            morph = weighted.mean(MORPH_NMU, WT), oxy = weighted.mean(OXY_NMU, WT), oxym = weighted.mean(OXYM_NMU, WT),
+            tram = weighted.mean(TRAM_NMU, WT), tap = weighted.mean(TAP_NMU, WT), hyd = weighted.mean(HYD_NMU, WT),
+            hydm = weighted.mean(HYDM_NMU, WT), suf = weighted.mean(SUF_NMU, WT), cod = weighted.mean(COD_NMU, WT),
+            dihy = weighted.mean(DIHY_NMU, WT), benz = weighted.mean(BENZ_NMU, WT), stim = weighted.mean(STIM_NMU, WT),
+            thc = weighted.mean(THC_NMU, WT), ktm = weighted.mean(KTM_NMU, WT))
 names(states)[1] <- "state"
