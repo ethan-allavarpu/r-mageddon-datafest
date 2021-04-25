@@ -1,0 +1,36 @@
+---
+title: "Team R-Mageddon"
+author:
+  - Ethan Allavarpu
+  - Dara Tan
+date: "Spring 2021"
+output:
+  beamer_presentation:
+    theme: "Szeged"
+    colortheme: "beaver"
+    includes:
+      in_header: header.tex
+    slide_level: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# The Data
+
+## Source
+
+## Background Information
+
+# Preliminary Searches
+
+## Interesting Remarks
+
+# A Potential Model
+
+## The Model
+
+## Influential Variables
+
+# Conclusion
