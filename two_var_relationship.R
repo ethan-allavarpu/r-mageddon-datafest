@@ -25,7 +25,7 @@ nmu_aggregate <- us18[, nmus] %>%
 two_var_relationship <- function(x, y) {
   race_age <- list()
   length(race_age) <- 18
-  names(race_age) <- nmus
+  names(race_age) <- c(nmus, "TOTAL")
   us18$var1 <- us18[[x]]
   us18$var2 <- us18[[y]]
   ra <- us18 %>%
@@ -58,7 +58,7 @@ two_var_relationship <- function(x, y) {
                            limits = if (i < 18) {range(nmu, na.rm = TRUE)} else{NULL}) +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 12, hjust = 1)) +
-      ggtitle(c(names(race_age), "ALL")[i]) + xlab(x) + ylab(y)
+      ggtitle(names(race_age)[i]) + xlab(x) + ylab(y)
     print(cor_heatmap)
   }
 }

@@ -51,3 +51,10 @@ two_var_relationship("ALC_USE", "DEM_DOLLARS")
 two_var_relationship("DEM_EDU", "DEM_DOLLARS")
 ```
 
+# COKE vs. CRACK
+```{r}
+two_var_relationship("COKE_USE", "CRACK_USE")
+two_var_relationship("DEM_EDU", "PAIN_CHRONIC")
+two_var_relationship("PAIN_ACUTE_RX", "PAIN_CHRONIC_RX")
+```
+

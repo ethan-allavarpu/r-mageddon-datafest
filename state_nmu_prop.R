@@ -25,4 +25,4 @@ state_nmu <- us18 %>%
             dihy = weighted.mean(DIHY_NMU, WT, na.rm = TRUE), benz = weighted.mean(BENZ_NMU, WT, na.rm = TRUE), stim = weighted.mean(STIM_NMU, WT, na.rm = TRUE),
             thc = weighted.mean(THC_NMU, WT, na.rm = TRUE), ktm = weighted.mean(KTM_NMU, WT, na.rm = TRUE),
             total = sum(fent, bup, meth, morph, oxy, oxym, tram, tap, hyd, hydm, suf, cod, dihy, benz, stim, thc, ktm, na.rm = TRUE))
-names(state_nmu)[1] <- "state"
+names(state_nmu)[1] <- "state" # State variable must be labeled "state"

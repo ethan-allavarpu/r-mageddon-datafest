@@ -14,7 +14,7 @@ state_nmu[is.na(state_nmu)] <- 0
 par(mfrow = c(1, 2))
 for (i in seq_len(ncol(states) - 1) + 1) {
   print(plot_usmap(data = states, 
-             values = names(states)[i],  
+             values = names(states)[i],  # Change this for respective variable 
              color = rgb(0, 0, 0), 
              labels = FALSE) + 
     scale_fill_continuous( low = "white", 
