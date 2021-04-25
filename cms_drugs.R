@@ -12,6 +12,8 @@ colnames(cms18) <- # (w)asp = (weighted) average spending per
   c("brand_name", "generic_name", "manufacturer_count", "total_spending",
     "total_dosage_units", "total_claims", "total_beneficiaries",
     "wasp_dosage_unit", "asp_claim", "asp_beneficiary", "outlier_flag")
+
+  # match generic name to us18 drug type ----
 dc <- str_replace(nmus, "_NMU", "")
 ugn <- unique(cms18$generic_name)
 drug_type_conversion <-
@@ -32,3 +34,6 @@ drug_type_conversion <-
              "Esketamine HCl"))
 cms18 <- cms18 %>%
   left_join(drug_type_conversion, by = "generic_name")
+
+  # ----
+
