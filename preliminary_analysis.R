@@ -32,14 +32,14 @@ order_section %>%
   apply(MARGIN = 1, FUN = mean)
 
 # by respondent ----
-# order_respondent <- integer(13)
-# for (i in seq_len(nrow(us18))) {
-#   order_vector <- as.integer(unname(us18[i, ] %>%
-#                                       select(str_c("ORDER_", sections))))
-#   use_vector <- as.integer(unname(us18[i, ] %>%
-#                                     select(str_c(sections, "_USE"))))
-#   order_respondent <- order_respondent + use_vector[order(order_vector)]
-# }
+order_respondent <- integer(13)
+for (i in seq_len(nrow(us18))) {
+  order_vector <- as.integer(unname(us18[i, ] %>%
+                                      select(str_c("ORDER_", sections))))
+  use_vector <- as.integer(unname(us18[i, ] %>%
+                                    select(str_c(sections, "_USE"))))
+  order_respondent <- order_respondent + use_vector[order(order_vector)]
+}
 rm(list = c("i", "order_vector", "use_vector"))
 
 # DEMOGRAPHICS AND NMU ----
