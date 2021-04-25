@@ -58,3 +58,8 @@ two_var_relationship("DEM_EDU", "PAIN_CHRONIC")
 two_var_relationship("PAIN_ACUTE_RX", "PAIN_CHRONIC_RX")
 ```
 
+# EDU vs. AGE10
+
+```{r}
+two_var_relationship("DEM_EDU", "DEM_AGE10")
+```
