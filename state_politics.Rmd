@@ -7,9 +7,10 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Map Plots
+
 ```{r, fig.height=3}
 source("state_politics.R")
-
 par(mfrow = c(1, 2))
 
 for (i in 2:19) {
@@ -18,7 +19,7 @@ for (i in 2:19) {
                    labels = FALSE) +
           scale_fill_gradient2(low = "red", mid = "mediumpurple1",
                                high = "mediumblue", midpoint = 1,
-                               name = "Ratio of Democrat/Republican") +
+                               name = "Political Affiliation") +
           theme(legend.position = "right") +
           theme(panel.background = element_rect(color = "black")) +
           labs(title = "Political Affiliation by 2018 Election Results"))
@@ -33,7 +34,26 @@ for (i in 2:19) {
           theme(legend.position = "right") +
           theme(panel.background = element_rect(color = "black")) +
           labs(title =
-                 str_c("Average ", str_to_upper(names(nmu_politics)[i]),
-                       " NMU By State")))
+                 str_c("Average ", names(nmu_politics)[i], " NMU By State")))
+}
+```
+
+# Bar Plots
+
+```{r, fig.height=3}
+par(mfrow = c(1, 2))
+
+for (i in 2:19) {
+  df <- nmu_politics %>% select(state, election, nmu = names(nmu_politics)[i])
+  print(df %>% ggplot() +
+          geom_col(aes(reorder(state, -nmu), nmu, fill = election)) +
+          scale_fill_gradient2(low = "red", mid = "mediumpurple1",
+                               high = "mediumblue", midpoint = 1,
+                               name = "Political Affiliation") +
+          theme_bw() +
+          labs(title = str_c("Weighted Mean of ", names(nmu_politics)[i],
+                             " NMU by State and Political Affiliation"),
+               x = "State", y = str_c("Weighted Mean of ",
+                                      names(nmu_politics)[i], " NMU")))
 }
 ```
