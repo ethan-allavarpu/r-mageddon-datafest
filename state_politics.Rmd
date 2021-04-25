@@ -1,0 +1,39 @@
+---
+title: "US Maps (Proportion of Total Respondents)"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, fig.height=3}
+source("state_politics.R")
+
+par(mfrow = c(1, 2))
+
+for (i in 2:19) {
+    # political affiliation by 2018 election results ----
+  print(plot_usmap(data = nmu_politics, values = "election",
+                   labels = FALSE) +
+          scale_fill_gradient2(low = "red", mid = "mediumpurple1",
+                               high = "mediumblue", midpoint = 1,
+                               name = "Ratio of Democrat/Republican") +
+          theme(legend.position = "right") +
+          theme(panel.background = element_rect(color = "black")) +
+          labs(title = "Political Affiliation by 2018 Election Results"))
+  
+    # average NMU by state ----
+  print(plot_usmap(data = nmu_politics,
+                   values = names(nmu_politics)[i], labels = FALSE) +
+          scale_fill_continuous(
+            low = "white", high = "darkred", name = "Average NMU",
+            limits = if (i < 19) {range(nmu_politics[, -c(1, 19:21)])
+              } else {NULL}) +
+          theme(legend.position = "right") +
+          theme(panel.background = element_rect(color = "black")) +
+          labs(title =
+                 str_c("Average ", str_to_upper(names(nmu_politics)[i]),
+                       " NMU By State")))
+}
+```

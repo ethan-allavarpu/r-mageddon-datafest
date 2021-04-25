@@ -44,7 +44,7 @@ us18 <- read.csv("US/us_18Q1.csv") %>%
   select(-DATE, -QTIME, -START_DATE, -STATUS)
 nmus <- str_subset(names(us18), "NMU\\b")
 
-states <- us18 %>%
+nmu_politics <- us18 %>%
   filter(DEM_STATE != "DC") %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
   group_by(DEM_STATE) %>%
@@ -68,5 +68,5 @@ states <- us18 %>%
             total = sum(fent, bup, meth, morph, oxy, oxym, tram, tap, hyd,
                         hydm, suf, cod, dihy, benz, stim, thc, ktm)) %>%
   mutate(election = election_politics,
-         ideological = gallup$conservative_average)
-names(states)[1] <- "state"
+         ideological = gallup$liberal / gallup$conservative) %>%
+  rename(state = DEM_STATE)
