@@ -1,0 +1,66 @@
+---
+title: "Relationship with CMS Variables"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning = FALSE, message = FALSE}
+source("cms_drugs.R")
+
+dems <- c("DEM_GENDER", "DEM_AGE10", "DEM_STDNT", "DEM_VET",
+          "DEM_HEALTH", "DEM_HISPANIC", "DEM_RACE", "DEM_INCOME",
+          "DEM_MARITAL", "DEM_EDU", "DEM_PREG")
+dem_names <- c("Gender", "Age Category", "Student", "Vet", "Healthcare Worker",
+               "Hispanic", "Race", "Income", "Marital Status",
+               "Education Level", "Pregnant")
+```
+
+# Weighted Spending
+
+```{r Weighted Spending, warning = FALSE, message = FALSE}
+for (i in seq_along(dems)) {
+  print(us18 %>%
+          select(DEM = dems[i], nmus) %>%
+          mutate_all(~replace(., is.na(.), 0)) %>%
+          group_by(DEM) %>%
+          summarize(FENT = mean(FENT_NMU), BUP = mean(BUP_NMU),
+                    METH = mean(METH_NMU), MORPH = mean(MORPH_NMU),
+                    OXY = mean(OXY_NMU), OXYM = mean(OXYM_NMU),
+                    TRAM = mean(TRAM_NMU), TAP = mean(TAP_NMU),
+                    HYD = mean(HYD_NMU), HYDM = mean(HYDM_NMU),
+                    SUF = mean(SUF_NMU), COD = mean(COD_NMU),
+                    DIHY = mean(DIHY_NMU), BENZ = mean(BENZ_NMU),
+                    STIM = mean(STIM_NMU), THC = mean(THC_NMU),
+                    KTM = mean(KTM_NMU)) %>%
+          pivot_longer(!contains("DEM"),
+                       names_to = "DRUG", values_to = "PROP") %>%
+          
+          left_join(cms18 %>%
+                      mutate(spending_dosage =
+                               total_spending * total_dosage_units) %>%
+                      filter(!is.na(spending_dosage)) %>%
+                      group_by(drug_code) %>%
+                      summarize(wasp_drug = sum(spending_dosage)  /
+                                  sum(total_dosage_units)) %>%
+                      arrange(desc(wasp_drug)) %>%
+                      mutate(WASP = row_number()) %>%
+                      rename(DRUG = drug_code),
+                    by = "DRUG") %>%
+          mutate(DRUG_REORDER = reorder_within(DRUG, PROP, DEM)) %>%
+          
+          ggplot() + geom_col(aes(DRUG_REORDER, PROP, fill = WASP)) +
+          scale_fill_continuous(low = "darkred", high = "pink",
+                                name = "Order") +
+          theme_bw() +
+          scale_x_reordered() +
+          labs(title =
+                 str_c("NMU Proportion by Order of Weighted Spending and ",
+                       dem_names[i]),
+               x = "Proportion", y = "Drug") +
+          facet_wrap(~DEM, ncol = 3, scales = "free_y") +
+          coord_flip())
+}
+```

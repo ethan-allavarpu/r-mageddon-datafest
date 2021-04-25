@@ -1,6 +1,7 @@
 
-library(tidyverse)
 library(readxl)
+library(tidyverse)
+library(tidytext)
 
 us18 <- read.csv("US/us_18Q1.csv") %>%
   select(-DATE, -QTIME, -START_DATE, -STATUS)
@@ -12,6 +13,16 @@ colnames(cms18) <- # (w)asp = (weighted) average spending per
   c("brand_name", "generic_name", "manufacturer_count", "total_spending",
     "total_dosage_units", "total_claims", "total_beneficiaries",
     "wasp_dosage_unit", "asp_claim", "asp_beneficiary", "outlier_flag")
+cms18 <- cms18 %>%
+  mutate(manufacturer_count = as.integer(manufacturer_count),
+         total_spending = as.numeric(total_spending),
+         total_dosage_units = as.integer(total_dosage_units),
+         total_claims = as.integer(total_claims),
+         total_beneficiaries = as.integer(total_beneficiaries),
+         wasp_dosage_unit = as.numeric(wasp_dosage_unit),
+         asp_claim = as.numeric(asp_claim),
+         asp_beneficiary = as.numeric(asp_beneficiary),
+         outlier_flag = as.logical(outlier_flag))
 
   # match generic name to us18 drug type ----
 dc <- str_replace(nmus, "_NMU", "")
@@ -33,7 +44,5 @@ drug_type_conversion <-
              "Nabilone", "Dronabinol", "Cannabidiol (Cbd)", # cannbinoids
              "Esketamine HCl"))
 cms18 <- cms18 %>%
-  left_join(drug_type_conversion, by = "generic_name")
-
-  # ----
-
+  left_join(drug_type_conversion, by = "generic_name") %>%
+  filter(!is.na(drug_code))
