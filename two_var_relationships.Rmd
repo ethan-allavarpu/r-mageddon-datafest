@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.width = 3, fig.height = 3, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, fig.width = 3, fig.height = 3, message = FALSE) 
 ```
 
 # Age and Race

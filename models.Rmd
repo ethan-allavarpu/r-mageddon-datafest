@@ -1,0 +1,44 @@
+---
+title: "Logistic Model"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+us18 <- read.csv("US/us_18Q1.csv", stringsAsFactors = TRUE) %>%
+  select(-DATE, -QTIME, -START_DATE, -STATUS) %>%
+  mutate_all(~replace(., is.na(.), 0))
+  
+nmus <- str_subset(names(us18), "NMU\\b")
+nmu_aggregate <- us18[, nmus] %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  rowSums()
+
+any_nmu <- us18[, nmus] %>%
+  apply(1, sum, na.rm = TRUE) %>% as.logical()
+  
+dems <- c("DEM_GENDER", "DEM_AGE10", "DEM_STDNT", "DEM_VET",
+          "DEM_HEALTH", "DEM_HISPANIC", "DEM_RACE", "DEM_INCOME",
+          "DEM_MARITAL", "DEM_EDU", "DEM_PREG", "DEM_STATE", )
+
+nmu_model <- us18 %>%
+  mutate(NMU = nmu_aggregate, ANY = any_nmu) %>%
+  select(dems, WT, ANY, NMU, DAST_SUM, nmus)
+complete_model <- glm(formula = DAST_SUM ~ . - NMU - WT, weights = WT, data = nmu_model)
+summary(complete_model)
+```
+
+```{r}
+library(randomForest)
+set.seed(129)
+train <- nmu_model[sample(nrow(nmu_model), .8*nrow(nmu_model)),]
+bag_tree <- randomForest(DAST_SUM ~ . - WT - ANY, data = train, ntree = 100, importance = TRUE)
+varImpPlot(bag_tree)
+bag_preds <- predict(bag_tree, newdata = validation)
+```
+
+

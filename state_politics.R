@@ -18,8 +18,8 @@ get_ratio <- function(df, state_name) {
     group_by(party) %>%
     summarize(party_votes = sum(candidatevotes))
   # democrat-to-republican ratio
-  state_data$party_votes[state_data$party == "democrat"] /
-    state_data$party_votes[state_data$party == "republican"]
+  (state_data$party_votes[state_data$party == "democrat"] - state_data$party_votes[state_data$party == "republican"])/
+    ((state_data$party_votes[state_data$party == "democrat"] + state_data$party_votes[state_data$party == "republican"] + state_data$party_votes[state_data$party == "other"] ))
 }
 get_election_politics <- function(state_name) {
   if (state_name %in% unique(senate_election$state)) {
@@ -43,8 +43,16 @@ gallup <- read.csv("external_data/gallup.csv")
 us18 <- read.csv("US/us_18Q1.csv") %>%
   select(-DATE, -QTIME, -START_DATE, -STATUS)
 nmus <- str_subset(names(us18), "NMU\\b")
+nmu_aggregate <- us18[, nmus] %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  rowSums()
+
+any_nmu <- us18[, nmus] %>%
+  apply(1, sum, na.rm = TRUE) %>% as.logical()
+  
 
 nmu_politics <- us18 %>%
+  mutate(NMU = nmu_aggregate, ANY = any_nmu) %>%
   filter(DEM_STATE != "DC") %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
   group_by(DEM_STATE) %>%
@@ -65,8 +73,9 @@ nmu_politics <- us18 %>%
             STIM = weighted.mean(STIM_NMU, WT),
             THC = weighted.mean(THC_NMU, WT),
             KTM = weighted.mean(KTM_NMU, WT),
-            Total = sum(FENT, BUP, METH, MORPH, OXY, OXYM, TRAM, TAP, HYD,
-                        HYDM, SUF, COD, DIHY, BENZ, STIM, THC, KTM)) %>%
+            dast = weighted.mean(DAST_SUM, WT),
+            aggregate = weighted.mean(NMU, WT, na.rm = TRUE),
+            any = weighted.mean(ANY, WT)) %>%
   mutate(election = election_politics,
          ideological = gallup$liberal / gallup$conservative) %>%
   rename(state = DEM_STATE)

@@ -12,8 +12,10 @@ source("state_nmu_prop.R")
 source("state_nmu.R")
 state_nmu[is.na(state_nmu)] <- 0
 par(mfrow = c(1, 2))
+
+map
 for (i in seq_len(ncol(states) - 1) + 1) {
-  print(plot_usmap(data = states, 
+  print(if(names(states)[i] %in% c("COD", "HYD", "OXY", "BENZ", "STIM")) {plot_usmap(data = states, 
              values = names(states)[i],  # Change this for respective variable 
              color = rgb(0, 0, 0), 
              labels = FALSE) + 
@@ -21,7 +23,7 @@ for (i in seq_len(ncol(states) - 1) + 1) {
                            high = rgb(0.5, 0, 0), 
                            name = "Average NMU", 
                            label = scales::comma,
-                           limits = if(i < 19) {range(states[, -c(1, 19)])}else{NULL}) + 
+                           limits = if(i < 19) {range(states[, -c(1, 19, 20, 21)])}else{NULL}) + 
     theme(legend.position = "right") + 
     theme(panel.background = element_rect(color = "black")) + 
     labs(title = paste("Average", names(states)[i], "NMU by State", collapse = " ")))
@@ -33,7 +35,7 @@ for (i in seq_len(ncol(states) - 1) + 1) {
                            high = rgb(0.5, 0, 0), 
                            name = "Average NMU", 
                            label = scales::comma,
-                           limits = if(i < 19) {range(state_nmu[, -c(1, 19)], na.rm = TRUE)}else{NULL}) + 
+                           limits = if(i < 19) {range(state_nmu[, -c(1, 19, 20, 21)])}else{NULL}) +
     theme(legend.position = "right") + 
     theme(panel.background = element_rect(color = "black")) + 
     labs(title = paste("Average", names(state_nmu)[i], "NMU by State (Based on those who have used)", collapse = " ")))

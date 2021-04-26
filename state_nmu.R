@@ -15,8 +15,11 @@ nmu_aggregate <- us18[, nmus] %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
   rowSums()
 
+any_nmu <- us18[, nmus] %>%
+  apply(1, sum, na.rm = TRUE) %>% as.logical()
+
 states <- us18 %>%
-  mutate(NMU = nmu_aggregate) %>%
+  mutate(NMU = nmu_aggregate, ANY = any_nmu) %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
   group_by(DEM_STATE) %>%
   summarize(fent = weighted.mean(FENT_NMU, WT), bup = weighted.mean(BUP_NMU, WT), meth = weighted.mean(METH_NMU, WT),
@@ -25,5 +28,7 @@ states <- us18 %>%
             hydm = weighted.mean(HYDM_NMU, WT), suf = weighted.mean(SUF_NMU, WT), cod = weighted.mean(COD_NMU, WT),
             dihy = weighted.mean(DIHY_NMU, WT), benz = weighted.mean(BENZ_NMU, WT), stim = weighted.mean(STIM_NMU, WT),
             thc = weighted.mean(THC_NMU, WT), ktm = weighted.mean(KTM_NMU, WT),
-            total = sum(fent, bup, meth, morph, oxy, oxym, tram, tap, hyd, hydm, suf, cod, dihy, benz, stim, thc, ktm))
+            dast = weighted.mean(DAST_SUM, WT),
+            aggregate = weighted.mean(NMU, WT, na.rm = TRUE),
+            any = weighted.mean(ANY, WT))
 names(states)[1] <- "state"

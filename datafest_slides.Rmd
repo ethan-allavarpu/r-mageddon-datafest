@@ -1,13 +1,16 @@
 ---
 title: "Team R-Mageddon"
-author:
+author: 
   - Ethan Allavarpu
   - Dara Tan
-date: "Spring 2021"
+subtitle: 
+date: |
+  | ethanallavarpu@g.ucla.edu , tanxuendara@ucla.edu
+  | Spring 2021
 output:
   beamer_presentation:
-    theme: "Szeged"
-    colortheme: "beaver"
+    theme: "Hannover"
+    colortheme: "spruce"
     includes:
       in_header: header.tex
     slide_level: 2
@@ -15,22 +18,283 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+load("helpgraph.RData")
+source("state_politics.R")
+source("two_var_relationship.R")
+library(tidyverse)
+library(randomForest)
 ```
 
-# The Data
+# Drugs with Misuse Problems
 
-## Source
+## Income-Independent
 
-## Background Information
+```{r, echo = FALSE, cache = TRUE}
+income
+```
 
-# Preliminary Searches
+## Across the United States
 
-## Interesting Remarks
+```{r, message = FALSE, echo = FALSE, cache = TRUE}
+source("state_nmu.R")
+source("state_nmu_prop.R")
+state_nmu[is.na(state_nmu)] <- 0
+crazy <- c("COD", "HYD", "OXY", "BENZ", "STIM") %>% tolower()
+for (i in seq_len(ncol(states) - 1) + 1) {
+  if(tolower(names(states)[i]) == crazy[1] ) {print(plot_usmap(data = states, 
+             values = names(states)[i],  # Change this for respective variable 
+             color = rgb(0, 0, 0), 
+             labels = FALSE) + 
+    scale_fill_continuous( low = "white", 
+                           high = rgb(0.5, 0, 0), 
+                           name = "Average NMU", 
+                           label = scales::comma,
+                           limits = if(i < 19) {range(states[, -c(1, 19, 20, 21)])}else{NULL}) + 
+    theme(legend.position = "right") + 
+    theme(panel.background = element_rect(color = "black")) + 
+    labs(title = paste("Average", toupper(names(states)[i]), "NMU by State", collapse = " ")))}
+}
+```
 
-# A Potential Model
+## Across the United States
 
-## The Model
+```{r, message = FALSE, echo = FALSE, cache = TRUE}
+for (i in seq_len(ncol(states) - 1) + 1) {
+  if(tolower(names(states)[i]) == crazy[2] ) {print(plot_usmap(data = states, 
+             values = names(states)[i],  # Change this for respective variable 
+             color = rgb(0, 0, 0), 
+             labels = FALSE) + 
+    scale_fill_continuous( low = "white", 
+                           high = rgb(0.5, 0, 0), 
+                           name = "Average NMU", 
+                           label = scales::comma,
+                           limits = if(i < 19) {range(states[, -c(1, 19, 20, 21)])}else{NULL}) + 
+    theme(legend.position = "right") + 
+    theme(panel.background = element_rect(color = "black")) + 
+    labs(title = paste("Average", toupper(names(states)[i]), "NMU by State", collapse = " ")))}
+}
+```
 
-## Influential Variables
+## Across the United States
+
+```{r, message = FALSE, echo = FALSE, cache = TRUE}
+for (i in seq_len(ncol(states) - 1) + 1) {
+  if(tolower(names(states)[i]) == crazy[3] ) {print(plot_usmap(data = states, 
+             values = names(states)[i],  # Change this for respective variable 
+             color = rgb(0, 0, 0), 
+             labels = FALSE) + 
+    scale_fill_continuous( low = "white", 
+                           high = rgb(0.5, 0, 0), 
+                           name = "Average NMU", 
+                           label = scales::comma,
+                           limits = if(i < 19) {range(states[, -c(1, 19, 20, 21)])}else{NULL}) + 
+    theme(legend.position = "right") + 
+    theme(panel.background = element_rect(color = "black")) + 
+    labs(title = paste("Average", toupper(names(states)[i]), "NMU by State", collapse = " ")))}
+}
+```
+
+## Across the United States
+
+```{r, message = FALSE, echo = FALSE, cache = TRUE}
+for (i in seq_len(ncol(states) - 1) + 1) {
+  if(tolower(names(states)[i]) == crazy[4] ) {print(plot_usmap(data = states, 
+             values = names(states)[i],  # Change this for respective variable 
+             color = rgb(0, 0, 0), 
+             labels = FALSE) + 
+    scale_fill_continuous( low = "white", 
+                           high = rgb(0.5, 0, 0), 
+                           name = "Average NMU", 
+                           label = scales::comma,
+                           limits = if(i < 19) {range(states[, -c(1, 19, 20, 21)])}else{NULL}) + 
+    theme(legend.position = "right") + 
+    theme(panel.background = element_rect(color = "black")) + 
+    labs(title = paste("Average", toupper(names(states)[i]), "NMU by State", collapse = " ")))}
+}
+```
+
+
+## Across the United States
+
+```{r, message = FALSE, echo = FALSE, cache = TRUE}
+for (i in seq_len(ncol(states) - 1) + 1) {
+  if(tolower(names(states)[i]) == crazy[5] ) {print(plot_usmap(data = states, 
+             values = names(states)[i],  # Change this for respective variable 
+             color = rgb(0, 0, 0), 
+             labels = FALSE) + 
+    scale_fill_continuous( low = "white", 
+                           high = rgb(0.5, 0, 0), 
+                           name = "Average NMU", 
+                           label = scales::comma,
+                           limits = if(i < 19) {range(states[, -c(1, 19, 20, 21)])}else{NULL}) + 
+    theme(legend.position = "right") + 
+    theme(panel.background = element_rect(color = "black")) + 
+    labs(title = paste("Average", toupper(names(states)[i]), "NMU by State", collapse = " ")))}
+}
+```
+
+
+
+# Two-Variable Interactions
+
+## Age and Race
+
+```{r, message=FALSE, echo=FALSE}
+two_var_relationship("DEM_AGE10", "DEM_RACE")
+```
+
+## Alcohol and Recreational Cannibis Use
+
+```{r, message=FALSE, echo=FALSE}
+two_var_relationship("ALC_USE", "CAN_REC_USE")
+```
+
+## Income and Education 
+
+```{r, message=FALSE, echo=FALSE}
+two_var_relationship("DEM_EDU", "DEM_DOLLARS")
+```
+
+## Income and Education
+
+```{r, echo=FALSE, message=FALSE, cache = TRUE}
+x <- "DEM_EDU"
+y <- "DEM_DOLLARS"
+  race_age <- list()
+  length(race_age) <- 1
+  names(race_age) <- "ANY"
+  us18$var1 <- us18[[x]]
+  us18$var2 <- us18[[y]]
+  ra <- us18 %>%
+    mutate(NMU = nmu_aggregate, ANY = any_nmu) %>%
+    mutate_all(~replace(., is.na(.), 0)) %>%
+    group_by(var1, var2) %>%
+    summarize(dast = weighted.mean(ANY, WT, na.rm = TRUE))
+  for (i in seq_len(ncol(ra) - 2)) {
+    ra[is.na(ra)] <- 0
+    ra_new <- as.data.frame(ra[, c(1:2, i + 2)])
+    colnames(ra_new) <- c(x, y, "NMU")
+    race_age[[i]] <- ra_new
+  }
+  par(mfrow = c(1, 3))
+  for (i in seq_along(race_age)) {
+    cor_heatmap <- ggplot(data = race_age[[i]], aes(x = race_age[[i]][, 1], y = race_age[[i]][, 2], fill = race_age[[i]][, 3])) +
+      geom_tile()
+    cor_heatmap <- cor_heatmap +
+      scale_fill_gradient2(low = "white", high = "darkred",
+                           name = "ANY") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, vjust = 1, size = 12, hjust = 1)) +
+      ggtitle("Any Drug Misuse") + xlab(x) + ylab(y)
+    print(cor_heatmap)
+  }
+```
+
+## Chronic Pain and Education
+
+```{r, message=FALSE, echo=FALSE}
+two_var_relationship("PAIN_CHRONIC", "DEM_EDU")
+```
+
+## Prescriptions for Chronic and Acute Pain
+
+```{r, message=FALSE, echo=FALSE}
+two_var_relationship("PAIN_CHRONIC_RX", "PAIN_ACUTE_RX")
+```
+
+# Influential Variables
+
+## Demographics
+```{r, message=FALSE, echo=FALSE, cache = TRUE}
+load("pval.RData")
+temp_plot
+```
+
+
+## Politics
+
+```{r, message=FALSE, echo=FALSE, cache = TRUE}
+for (i in 19) {
+    # political affiliation by 2018 election results ----
+  print(plot_usmap(data = nmu_politics, values = "election",
+                   labels = FALSE) +
+          scale_fill_gradient2(low = rgb(0.5, 0, 0), mid = rgb(0.5, 0, 0.5, alpha = 0.1),
+                               high = rgb(0, 0, 0.5),
+                               name = "Political Affiliation") +
+          theme(legend.position = "right") +
+          theme(panel.background = element_rect(color = "black")) +
+          labs(title = "Political Affiliation by 2018 Election Results"))
+}
+```
+
+## Politics
+```{r, message=FALSE, echo=FALSE, cache = TRUE}
+    # average NMU by state ----
+for(i in 19) {
+  print(plot_usmap(data = nmu_politics,
+                   values = names(nmu_politics)[i], labels = FALSE) +
+          scale_fill_continuous(
+            low = "white", high = "darkred", name = "Average NMU",
+            limits = if (i < 19) {range(nmu_politics[, -c(1, 19:23)])
+              } else {NULL}) +
+          theme(legend.position = "right") +
+          theme(panel.background = element_rect(color = "black")) +
+          labs(title =
+                 str_c("Average ", names(nmu_politics)[i], " NMU By State")))
+}
+```
+
+## Politics
+
+```{r, echo=FALSE, message=FALSE, cache = TRUE}
+for (i in 2:19) {
+  df <- nmu_politics %>% select(state, election, nmu = names(nmu_politics)[i])
+  if (names(nmu_politics)[i] == "dast") {
+  print(df %>% ggplot() +
+          geom_col(aes(reorder(state, -nmu), nmu, fill = election)) +
+          scale_fill_gradient2(low = rgb(0.5, 0, 0), mid = rgb(0.5, 0, 0.5, alpha = 0.1),
+                               high = rgb(0, 0, 0.5),
+                               name = "Political Affiliation") +
+          theme_bw() +
+          labs(title = str_c("Weighted Mean of ", toupper(names(nmu_politics)[i]),
+                             " NMU by State and Political Affiliation"),
+               x = "State", y = str_c("Weighted Mean of ",
+                                      names(nmu_politics)[i], " NMU")))
+  }
+}
+```
+
+
+
+
+## Random Forest
+
+```{r, echo = FALSE, cache = TRUE}
+library(randomForest)
+varImpPlot(bag_tree, type = 1, n.var = 10, main = "Influential Predictors for DAST Scores")
+```
+
 
 # Conclusion
+
+## Misused Drugs
+
+  - Hydrocodone (e.g., Vicodin)
+  - Codeine
+  - Oxycodone (e.g., OxyContin, Percocet)
+  - Benzodiazepines (e.g., Xanax)
+  - Stimulants (e.g. Adderall)
+  
+
+## How to Identify Misuse
+
+  - Prior misuse is a strong indicator of future misuse (expected)
+  - Age brackets seem to be important (younger people have higher levels of misuse)
+  - Higher education levels surprisingly had higher levels of misuse for *any* drug
+  - Acute pain prescriptions was a stronger driver of misuse than chronic pain prescriptions
+  - Race is not as strong of a factor as many perceive
+
+# Citations
+
+  - https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Information-on-Prescription-Drugs/MedicarePartD
+  - https://github.com/MEDSL/2018-elections-official

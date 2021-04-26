@@ -33,7 +33,7 @@ dem_nmu_chisq_pval %>%
   pivot_longer(!contains("DEM"), names_to = "NMU", values_to = "PVAL") %>%
   ggplot() + geom_tile(aes(DEM, NMU, fill = PVAL)) +
   scale_fill_gradient2(low = "darkred", mid = "white", high = "seagreen",
-                       midpoint = 0.1, name = "p-value")
+                       midpoint = 0.1, name = "p-value") -> temp_plot
 
 # sum(dem_nmu_chisq_pval[, -1] < (0.05 / (12 * 17))) returns 0
 # min(dem_nmu_chisq_pval[, -1]) returns 0.0004997501 -> * (17 * 12) = 0.101949

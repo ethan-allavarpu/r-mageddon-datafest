@@ -22,19 +22,20 @@ dem_names <- c("Gender", "Age Category", "Student", "Vet", "Healthcare Worker",
 
 ```{r Weighted Spending, warning = FALSE, message = FALSE}
 for (i in seq_along(dems)) {
-  print(us18 %>%
-          select(DEM = dems[i], nmus) %>%
+  if (dems[i] == "DEM_INCOME") {
+  print(income <- us18 %>%
+          select(DEM = dems[i], nmus, WT) %>%
           mutate_all(~replace(., is.na(.), 0)) %>%
           group_by(DEM) %>%
-          summarize(FENT = mean(FENT_NMU), BUP = mean(BUP_NMU),
-                    METH = mean(METH_NMU), MORPH = mean(MORPH_NMU),
-                    OXY = mean(OXY_NMU), OXYM = mean(OXYM_NMU),
-                    TRAM = mean(TRAM_NMU), TAP = mean(TAP_NMU),
-                    HYD = mean(HYD_NMU), HYDM = mean(HYDM_NMU),
-                    SUF = mean(SUF_NMU), COD = mean(COD_NMU),
-                    DIHY = mean(DIHY_NMU), BENZ = mean(BENZ_NMU),
-                    STIM = mean(STIM_NMU), THC = mean(THC_NMU),
-                    KTM = mean(KTM_NMU)) %>%
+          summarize(FENT = weighted.mean(FENT_NMU, WT), BUP = weighted.mean(BUP_NMU, WT),
+                    METH = weighted.mean(METH_NMU, WT), MORPH = weighted.mean(MORPH_NMU, WT),
+                    OXY = weighted.mean(OXY_NMU, WT), OXYM = weighted.mean(OXYM_NMU, WT),
+                    TRAM = weighted.mean(TRAM_NMU, WT), TAP = weighted.mean(TAP_NMU, WT),
+                    HYD = weighted.mean(HYD_NMU, WT), HYDM = weighted.mean(HYDM_NMU, WT),
+                    SUF = weighted.mean(SUF_NMU, WT), COD = weighted.mean(COD_NMU, WT),
+                    DIHY = weighted.mean(DIHY_NMU, WT), BENZ = weighted.mean(BENZ_NMU, WT),
+                    STIM = weighted.mean(STIM_NMU, WT), THC = weighted.mean(THC_NMU, WT),
+                    KTM = weighted.mean(KTM_NMU, WT)) %>%
           pivot_longer(!contains("DEM"),
                        names_to = "DRUG", values_to = "PROP") %>%
           
@@ -61,6 +62,6 @@ for (i in seq_along(dems)) {
                        dem_names[i]),
                x = "Proportion", y = "Drug") +
           facet_wrap(~DEM, ncol = 3, scales = "free_y") +
-          coord_flip())
+          coord_flip())}
 }
 ```
