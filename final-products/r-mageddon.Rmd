@@ -1,0 +1,38 @@
+---
+title: "Team R-Mageddon"
+author:
+  - Ethan Allavarpu (ethanallavarpu@g.ucla.edu)
+  - Dara Tan (tanxuendara@ucla.edu)
+date: "Spring 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Our primary goal was to look at the United States in 2018 to determine the levels of misuse within the country. We decided only to use the 2018 United States data in our analysis because if we were to span countries, different policies could greatly affect any subsequent analysis (we couldn't perform analysis across countries) and keeping everything within the same time period and location allows for more interpretable and potentially more generalizable results. The primary questions that we considered for this analysis were *(1)* which drugs within the United States are most often misued and *(2)* which demographic and individual characteristics tend to be associated with higher levels of misuse. To quantify misuse, we looked at three variables:
+
+  - `DAST_SUM`: The sum of the ten `DAST` questions, with higher values indicating greater risk for misuse
+  - `TOTAL_NMU`: How many drugs were used by a participant for a non-medical use? This indicates a greater chance for misuse across multiple drugs
+  - `ANY_NMU`: Were any drugs used by a participant for a non-medical use? This indicates a greater chance for misuse of any drug
+  
+  
+The methods we used were chi-square tests, generalized linear models, and random forests. Before any statistical tests, we looked at the distribution of several variables and their impacts on misuse levels through heatmaps and maps of the United States overlayed with certain variables. We used chi-square tests to determine which demographic features were linked to higher rates of drug misuse, which we characterized by `TOTAL_NMU`. We used generalized linear models and random forests, along with ANOVA, to decide which variables played a significant role in explaining the misuse score, which we quantified using `DAST_SUM`.
+
+After our analysis, we noticed that the following five drugs had the greatest levels of misuse in the country in 2018, with each having its own pocket of regionality and impact: 
+
+  - Hydrocodone (e.g., Vicodin)
+  - Codeine
+  - Oxycodone (e.g., OxyContin, Percocet)
+  - Benzodiazepines (e.g., Xanax)
+  - Stimulants (e.g. Adderall)
+  
+In addition, some results we found related to demographics and misuse were:
+
+  - Prior misuse is a strong indicator of future misuse (expected)
+  - Age brackets seem to be important (younger people have higher levels of misuse)
+  - Higher education levels surprisingly had higher levels of misuse for *any* drug
+  - Acute pain prescriptions was a stronger driver of misuse than chronic pain prescriptions
+  - Race is not as strong of a factor as many perceive
+  - Stronger political leanings appear to have, generally, higher misuse levels
